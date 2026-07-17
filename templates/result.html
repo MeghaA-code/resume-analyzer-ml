@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block title %}Analysis Results - Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h2 class="fw-800 mb-0">Analysis Results</h2>
+                <p class="text-muted mb-0">{{ filename }}</p>
+            </div>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-repeat me-1"></i> Analyze Another Resume
+            </a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Predicted Category -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted small text-uppercase fw-semibold mb-1">Predicted Job Category</p>
+                        <h3 class="fw-800 text-primary mb-1">{{ predicted_category }}</h3>
+                        <p class="text-muted mb-0">{{ confidence }}% model confidence</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATS Score -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4 d-flex align-items-center">
+                        <div class="ats-gauge-wrap me-3">
+                            <canvas id="atsGaugeChart" width="110" height="110"></canvas>
+                            <div class="ats-gauge-label">{{ ats_score }}</div>
+                        </div>
+                        <div>
+                            <p class="text-muted small text-uppercase fw-semibold mb-1">ATS Score</p>
+                            <h4 class="fw-700 mb-0
+                                {% if ats_label == 'Excellent' %}text-success
+                                {% elif ats_label == 'Good' %}text-primary
+                                {% elif ats_label == 'Needs Improvement' %}text-warning
+                                {% else %}text-danger{% endif %}">
+                                {{ ats_label }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Skill match -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-700 mb-3"><i class="bi bi-check2-circle text-success me-1"></i> Matched Skills
+                            <span class="text-muted small fw-normal">({{ matched_skills|length }}/{{ total_required_skills }} &middot; {{ match_percentage }}%)</span>
+                        </h5>
+                        {% if matched_skills %}
+                            {% for skill in matched_skills %}
+                                <span class="badge rounded-pill skill-badge-matched m-1">{{ skill }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small mb-0">No skills from the {{ predicted_category }} skill set were detected.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-700 mb-3"><i class="bi bi-exclamation-circle text-danger me-1"></i> Missing Skills
+                            <span class="text-muted small fw-normal">({{ missing_skills|length }})</span>
+                        </h5>
+                        {% if missing_skills %}
+                            {% for skill in missing_skills %}
+                                <span class="badge rounded-pill skill-badge-missing m-1">{{ skill }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small mb-0">Great news — no missing skills detected for this category!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Category confidence chart -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-700 mb-3"><i class="bi bi-bar-chart-fill text-primary me-1"></i> Category Match Confidence</h5>
+                        <canvas id="categoryChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATS breakdown chart -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-700 mb-3"><i class="bi bi-pie-chart-fill text-primary me-1"></i> ATS Score Breakdown</h5>
+                        <canvas id="atsBreakdownChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course recommendations -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-700 mb-3"><i class="bi bi-mortarboard-fill text-primary me-1"></i> Recommended Courses to Close Skill Gaps</h5>
+                {% if course_recommendations %}
+                    <div class="row g-3">
+                        {% for rec in course_recommendations %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="course-card p-3 h-100">
+                                    <p class="fw-semibold mb-2 text-capitalize">{{ rec.skill }}</p>
+                                    <ul class="small text-muted mb-0 ps-3">
+                                        {% for course in rec.courses %}
+                                            <li>{{ course }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small mb-0">No course recommendations needed — your skill set already covers the {{ predicted_category }} requirements well.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="row g-3 mb-5">
+            <div class="col-6 col-md-3">
+                <div class="stat-box text-center p-3">
+                    <p class="fs-4 fw-800 mb-0">{{ word_count }}</p>
+                    <p class="small text-muted mb-0">Word Count</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box text-center p-3">
+                    <p class="fs-4 fw-800 mb-0">{{ found_skills|length }}</p>
+                    <p class="small text-muted mb-0">Skills Detected</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box text-center p-3">
+                    <p class="fs-4 fw-800 mb-0">{{ ats_breakdown.action_verbs }}%</p>
+                    <p class="small text-muted mb-0">Action Verb Score</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box text-center p-3">
+                    <p class="fs-4 fw-800 mb-0">{{ "Yes" if has_bullet_points else "No" }}</p>
+                    <p class="small text-muted mb-0">Uses Bullet Points</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const atsScore = {{ ats_score }};
+    const atsBreakdown = {{ ats_breakdown | tojson }};
+    const categoryConfidence = {{ confidence_by_category | tojson }};
+
+    // --- ATS Gauge (doughnut) ---
+    new Chart(document.getElementById('atsGaugeChart'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [atsScore, 100 - atsScore],
+                backgroundColor: [
+                    atsScore >= 80 ? '#22c55e' : atsScore >= 65 ? '#6366f1' : atsScore >= 50 ? '#f59e0b' : '#ef4444',
+                    '#e9ecf5'
+                ],
+                borderWidth: 0,
+                cutout: '75%',
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            responsive: false,
+        }
+    });
+
+    // --- Category confidence bar chart ---
+    const catLabels = Object.keys(categoryConfidence);
+    const catValues = Object.values(categoryConfidence);
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                label: 'Confidence (%)',
+                data: catValues,
+                backgroundColor: catLabels.map((_, i) => i === 0 ? '#6366f1' : '#c7d2fe'),
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { x: { max: 100, ticks: { callback: v => v + '%' } } }
+        }
+    });
+
+    // --- ATS breakdown radar/bar chart ---
+    const breakdownLabels = Object.keys(atsBreakdown).map(k => k.replace(/_/g, ' '));
+    const breakdownValues = Object.values(atsBreakdown);
+    new Chart(document.getElementById('atsBreakdownChart'), {
+        type: 'radar',
+        data: {
+            labels: breakdownLabels,
+            datasets: [{
+                label: 'Score',
+                data: breakdownValues,
+                backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                borderColor: '#6366f1',
+                pointBackgroundColor: '#6366f1',
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+{% endblock %}

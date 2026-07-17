@@ -1,0 +1,113 @@
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --bg-soft: #f6f7fb;
+    --text-dark: #1e1b3a;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-soft);
+    color: var(--text-dark);
+}
+
+.fw-800 { font-weight: 800; }
+.fw-700 { font-weight: 700; }
+
+.navbar {
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.card {
+    border-radius: 16px;
+}
+
+.upload-zone {
+    border: 2px dashed #c7d2fe;
+    border-radius: 16px;
+    background-color: #fafaff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+    border-color: var(--primary);
+    background-color: #f0f0ff;
+}
+
+.feature-box {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.category-badge {
+    background-color: #eef0ff;
+    color: var(--primary-dark);
+    font-weight: 500;
+    padding: 0.5em 0.9em;
+}
+
+.skill-badge-matched {
+    background-color: #dcfce7;
+    color: #15803d;
+    padding: 0.45em 0.85em;
+    font-weight: 500;
+}
+
+.skill-badge-missing {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 0.45em 0.85em;
+    font-weight: 500;
+}
+
+.course-card {
+    background-color: #fafaff;
+    border: 1px solid #eceefb;
+    border-radius: 12px;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.ats-gauge-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+}
+
+.ats-gauge-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 800;
+    font-size: 1.5rem;
+}

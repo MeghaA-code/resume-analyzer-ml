@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Resume Analyzer - Upload{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="text-center mb-5">
+            <h1 class="fw-800 display-6">Know exactly how your resume performs</h1>
+            <p class="text-muted fs-5">
+                Upload your resume to get an ML-predicted job category, ATS compatibility
+                score, missing skills, and personalized course recommendations.
+            </p>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data" id="upload-form">
+
+                    <div class="upload-zone text-center p-5 mb-4" id="upload-zone">
+                        <i class="bi bi-cloud-arrow-up-fill fs-1 text-primary mb-2 d-block"></i>
+                        <p class="mb-1 fw-semibold">Drag &amp; drop your resume here</p>
+                        <p class="text-muted small mb-3">or click to browse &middot; PDF or DOCX &middot; max 5 MB</p>
+                        <input class="form-control d-none" type="file" id="resume" name="resume" accept=".pdf,.docx" required>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="browse-btn">Choose File</button>
+                        <div id="file-name-display" class="mt-3 fw-semibold text-success"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="analyze-btn">
+                        <i class="bi bi-magic me-1"></i> Analyze Resume
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="feature-box p-3 text-center h-100">
+                    <i class="bi bi-bullseye fs-3 text-primary"></i>
+                    <p class="fw-semibold mb-0 mt-2">Category Prediction</p>
+                    <p class="small text-muted mb-0">ML model classifies your resume's best-fit job category.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box p-3 text-center h-100">
+                    <i class="bi bi-clipboard-check fs-3 text-primary"></i>
+                    <p class="fw-semibold mb-0 mt-2">ATS Score</p>
+                    <p class="small text-muted mb-0">See how well your resume would pass automated screening.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box p-3 text-center h-100">
+                    <i class="bi bi-mortarboard fs-3 text-primary"></i>
+                    <p class="fw-semibold mb-0 mt-2">Course Suggestions</p>
+                    <p class="small text-muted mb-0">Close skill gaps with targeted learning recommendations.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="small text-muted mb-2">Supported job categories</p>
+            <div>
+                {% for cat in categories %}
+                    <span class="badge rounded-pill category-badge m-1">{{ cat }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
