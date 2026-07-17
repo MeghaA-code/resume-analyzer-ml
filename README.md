@@ -139,3 +139,7 @@ Returns a JSON object with `predicted_category`, `confidence`, `ats_score`,
 ## License
 
 This project is provided as-is for educational/portfolio purposes.
+
+## 🚀 Live Demo
+
+https://resume-analyzer-ml-17uw.onrender.com
